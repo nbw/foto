@@ -50,6 +50,8 @@ pub enum Commands {
         #[arg(short = 't', long = "type", default_value = "hsv")]
         sat_type: String,
     },
+    #[command(hide = true)]
+    CliReadme {},
 }
 
 pub fn process_contrast_command(
@@ -109,6 +111,34 @@ pub fn process_saturation_command(
             cmds::saturation::SaturationType::Luminance => "luma",
         }
     );
+
+    Ok(())
+}
+
+pub fn add_cli_cmd_to_readme() -> Result<()> {
+    let md = clap_markdown::help_markdown::<Cli>();
+
+    // Read the README.md file
+    let mut content = std::fs::read_to_string("README.md")?;
+
+    // Find the start and end markers
+    let start = "<!-- start: CLI USAGE -->";
+    let end = "<!-- end: CLI USAGE -->";
+
+    // Replace content between markers
+    let start_idx = content
+        .find(start)
+        .ok_or_else(|| anyhow::anyhow!("Could not find start marker"))?;
+    let end_idx = content
+        .find(end)
+        .ok_or_else(|| anyhow::anyhow!("Could not find end marker"))?;
+
+    content.replace_range((start_idx + start.len())..end_idx, &format!("\n\n{}\n", md));
+
+    // Write back to README.md
+    std::fs::write("README.md", content)?;
+
+    println!("Markdown help written to README.md");
 
     Ok(())
 }
