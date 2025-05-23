@@ -16,9 +16,9 @@ fn main() -> Result<()> {
         cli::Commands::Saturation {
             input,
             output,
-            amount,
+            saturation,
             sat_type,
-        } => cli::process_saturation_command(input, output, amount, sat_type),
+        } => cli::process_saturation_command(input, output, saturation, sat_type),
         cli::Commands::CliReadme {} => cli::add_cli_cmd_to_readme(),
     }
 }

@@ -43,8 +43,8 @@ pub enum Commands {
         output: PathBuf,
 
         /// Saturation amount (must be greater than 0)
-        #[arg(short, long)]
-        amount: f32,
+        #[arg(short, long = "sat")]
+        saturation: f32,
 
         /// Saturation type (hsv or luma)
         #[arg(short = 't', long = "type", default_value = "hsv")]
@@ -85,7 +85,7 @@ pub fn process_contrast_command(
 pub fn process_saturation_command(
     input: PathBuf,
     output: PathBuf,
-    amount: f32,
+    saturation: f32,
     sat_type: String,
 ) -> Result<()> {
     // Read the input image
@@ -95,7 +95,7 @@ pub fn process_saturation_command(
     let sat_type = cmds::saturation::SaturationType::from_str(&sat_type)?;
 
     // Process the image
-    let processed_img = cmds::saturation::apply_saturation(img, amount, sat_type.clone())?;
+    let processed_img = cmds::saturation::apply_saturation(img, saturation, sat_type.clone())?;
 
     // Save the processed image
     processed_img.save(&output)?;
@@ -103,12 +103,13 @@ pub fn process_saturation_command(
     println!("Image processed successfully!");
     println!("Input: {}", input.display());
     println!("Output: {}", output.display());
-    println!("Saturation amount: {}", amount);
+    println!("Saturation amount: {}", saturation);
     println!(
         "Saturation type: {}",
         match sat_type {
             cmds::saturation::SaturationType::Hsv => "hsv",
             cmds::saturation::SaturationType::Luminance => "luma",
+            cmds::saturation::SaturationType::LuminanceSimd => "luma simd",
         }
     );
 
